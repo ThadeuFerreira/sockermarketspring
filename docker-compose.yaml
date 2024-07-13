@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-stock-analytics
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: stockanalytics
+      MYSQL_USER: stockuser
+      MYSQL_PASSWORD: stockpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  backend:
+    build: .
+    container_name: stock-analytics-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stockanalytics
+      SPRING_DATASOURCE_USERNAME: stockuser
+      SPRING_DATASOURCE_PASSWORD: stockpassword
+
+  frontend:
+    build:
+      context: ./stock-price-analytics-frontend
+      dockerfile: Dockerfile
+    container_name: stock-analytics-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
