@@ -6,12 +6,14 @@ import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.stockmarket.stockmarketspring.service.DataService;
 
 import java.time.LocalDate;
 
 @RestController
+@RequestMapping("/api")
 public class StockController {
 
     private final DataService dataService;
@@ -26,7 +28,7 @@ public class StockController {
         LocalDate startDate = checkDate(start_date);
         StockData stockData = dataService.getStockData(symbol, startDate);
         if (stockData == null) {
-            throw new IllegalArgumentException("No data found for the given date");
+            return null;
         }
         return new StockInfoDTO(
                 stockData.getClosePrice(),

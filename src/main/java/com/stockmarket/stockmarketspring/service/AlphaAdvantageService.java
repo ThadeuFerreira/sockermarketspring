@@ -43,7 +43,7 @@ public class AlphaAdvantageService {
         StockInsertUpdateInfoDTO stockInsertUpdateInfoDTO;
         String url = String.format(BASE_URL, symbol, apiKey);
 
-        StockData lastStockData = stockRepository.findLastStockData();
+        StockData lastStockData = stockRepository.findLastStockData(symbol);
 
         if (lastStockData == null || lastStockData.getDate().isBefore(startDate)) {
             stockInsertUpdateInfoDTO = getNewDataFromApi(symbol, url);

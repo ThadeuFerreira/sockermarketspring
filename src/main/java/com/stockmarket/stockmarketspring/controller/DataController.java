@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController()
-@RequestMapping("/data")
+@RequestMapping("/api")
 public class DataController {
 
     private final AlphaAdvantageService alphaAdvantageService;

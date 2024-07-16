@@ -13,6 +13,7 @@ public interface StockRepository extends JpaRepository<StockData, Long> {
     List<StockData> findBySymbolAndDateBetween(String symbol, LocalDate startDate, LocalDate endDate);
     StockData findBySymbolAndDate(String symbol, LocalDate date);
 
-    @Query("SELECT s FROM StockData s ORDER BY s.date DESC LIMIT 1")
-    StockData findLastStockData();
+    @Query("SELECT s FROM StockData s WHERE s.symbol = ?1 ORDER BY s.date DESC LIMIT 1")
+    StockData findLastStockData(String symbol);
+
 }
