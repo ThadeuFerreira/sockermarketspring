@@ -1,12 +1,12 @@
 package com.stockmarket.stockmarketspring.controller;
 
-import com.stockmarket.stockmarketspring.dto.StockDataSummaryDTO;
-import com.stockmarket.stockmarketspring.model.StockData;
+import com.stockmarket.stockmarketspring.dto.CollectDataRequestPayload;
+import com.stockmarket.stockmarketspring.dto.StockInsertUpdateInfoDTO;
 import com.stockmarket.stockmarketspring.service.AlphaAdvantageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,8 +27,8 @@ public class DataController {
         this.alphaAdvantageService = alphaAdvantageService;
     }
 
-    @PostMapping("/db_create")
-    public ResponseEntity<Map<String, StockDataSummaryDTO>> createDatabase() {
+    @PostMapping("/collect_data")
+    public ResponseEntity<Map<String, StockInsertUpdateInfoDTO>> createDatabase(@RequestBody CollectDataRequestPayload requestPayload) {
 
 //        1. MSFT
 //        2. AAPL
@@ -43,14 +43,21 @@ public class DataController {
 
 
         LocalDate startDate = LocalDate.now().minusDays(5);
+        if (requestPayload.start_date() != null) {
+            startDate = LocalDate.parse(requestPayload.start_date());
+        }
 
         //List<String> symbols = List.of("MSFT", "AAPL", "NVDA", "AMZN", "META", "GOOGL", "GOOG", "BRK.B", "LLY", "AVGO");
         List<String> symbols = List.of("IBM");
+        if (requestPayload.symbols() != null) {
+            symbols = requestPayload.symbols();
+        }
 
-        Map<String, StockDataSummaryDTO> stringStockDataSummaryDTOHashMap = new HashMap<>();
-        List<StockDataSummaryDTO> stockDataSummaryDTOList = new ArrayList<>();
+        Map<String, StockInsertUpdateInfoDTO> stringStockDataSummaryDTOHashMap = new HashMap<>();
+        List<StockInsertUpdateInfoDTO> stockInsertUpdateInfoDTOList = new ArrayList<>();
+        LocalDate finalStartDate = startDate;
         symbols.forEach(symbol -> {
-            StockDataSummaryDTO sdto = alphaAdvantageService.fetchStockData(symbol, startDate);
+            StockInsertUpdateInfoDTO sdto = alphaAdvantageService.fetchStockData(symbol, finalStartDate);
                     stringStockDataSummaryDTOHashMap.put(symbol, sdto);
         }
         );
@@ -58,7 +65,7 @@ public class DataController {
         return ResponseEntity.ok(stringStockDataSummaryDTOHashMap);
     }
 
-    @PostMapping("/collect_data")
+    @PostMapping("/db_create")
     public ResponseEntity<String> collectData() {
 
         return ResponseEntity.ok("Data collected and storage successfully.");

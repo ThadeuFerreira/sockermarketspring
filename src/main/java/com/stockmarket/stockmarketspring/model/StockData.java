@@ -1,12 +1,17 @@
 package com.stockmarket.stockmarketspring.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "stock_data")
+@Table(name = "stock_data", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"symbol", "date"})
+})
 public class StockData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +24,14 @@ public class StockData {
     private BigDecimal highPrice;
     private BigDecimal lowPrice;
     private Long volume;
+
+    @CreationTimestamp
+    @Column(name = "created_on", nullable = false, updatable = false)
+    private LocalDateTime createdOn;
+
+    @UpdateTimestamp
+    @Column(name = "updated_on", nullable = false)
+    private LocalDateTime updatedOn;
 
     // Getters and setters
 

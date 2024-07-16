@@ -1,10 +1,10 @@
 package com.stockmarket.stockmarketspring.dto;
 
-public class StockDataSummaryDTO {
+public class StockInsertUpdateInfoDTO {
     private long rowsInserted;
     private long totalRows;
 
-    public StockDataSummaryDTO(long rowsInserted, long totalRows) {
+    public StockInsertUpdateInfoDTO(long rowsInserted, long totalRows) {
         this.rowsInserted = rowsInserted;
         this.totalRows = totalRows;
     }

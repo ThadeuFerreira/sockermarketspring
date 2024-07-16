@@ -1,11 +1,11 @@
 package com.stockmarket.stockmarketspring.service;
 
-import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stockmarket.stockmarketspring.dto.StockDataSummaryDTO;
+import com.stockmarket.stockmarketspring.dto.StockInsertUpdateInfoDTO;
 import com.stockmarket.stockmarketspring.model.StockData;
 import com.stockmarket.stockmarketspring.repository.StockRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
@@ -33,26 +33,27 @@ public class AlphaAdvantageService {
 
     private static StockRepository stockRepository;
 
+    @Autowired
     public AlphaAdvantageService(RestTemplate restTemplate, StockRepository stockRepository) {
         this.restTemplate = restTemplate;
         this.stockRepository = stockRepository;
     }
 
-    public StockDataSummaryDTO fetchStockData(String symbol, LocalDate startDate) {
-        StockDataSummaryDTO stockDataSummaryDTO;
+    public StockInsertUpdateInfoDTO fetchStockData(String symbol, LocalDate startDate) {
+        StockInsertUpdateInfoDTO stockInsertUpdateInfoDTO;
         String url = String.format(BASE_URL, symbol, apiKey);
 
         StockData lastStockData = stockRepository.findLastStockData();
 
         if (lastStockData == null || lastStockData.getDate().isBefore(startDate)) {
-            stockDataSummaryDTO = getNewDataFromApi(symbol, url);
-            return stockDataSummaryDTO;
+            stockInsertUpdateInfoDTO = getNewDataFromApi(symbol, url);
+            return stockInsertUpdateInfoDTO;
         }
         long totalRows = stockRepository.count();
-        return new StockDataSummaryDTO(0,totalRows);
+        return new StockInsertUpdateInfoDTO(0,totalRows);
     }
 
-    private StockDataSummaryDTO getNewDataFromApi(String symbol, String url) {
+    private StockInsertUpdateInfoDTO getNewDataFromApi(String symbol, String url) {
         ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -88,7 +89,7 @@ public class AlphaAdvantageService {
         long inserted = stockDataList.size();
         long totalRows = stockRepository.count();
 
-        return new StockDataSummaryDTO(inserted, totalRows);
+        return new StockInsertUpdateInfoDTO(inserted, totalRows);
 
     }
 
